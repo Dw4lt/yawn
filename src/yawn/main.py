@@ -1,10 +1,10 @@
-import whisper
+import argparse
+import threading
 
 import keyboard
-
-import pyaudio
 import numpy as np
-import threading
+import pyaudio
+import whisper
 
 CHUNKSIZE = 1024
 SAMPLING_RATE = 16000
@@ -68,7 +68,27 @@ def transcribe(model: whisper.Whisper, audio: np.ndarray) -> str:
     return text
 
 
+def handle_command_arguments():
+    parser = argparse.ArgumentParser(
+        description="""
+        Yet Another Whisper Transcriber.
+        Records your voice while the hotkey is pressed, transcribes it, then writes it to whatever window you have open.
+        """
+    )
+
+    parser.add_argument(
+        "-k", '--hotkey',
+        type=str,
+        default='scroll lock',
+        help='The hotkey to start/stop recording (default: "scroll lock")',
+    )
+
+    return parser.parse_args()
+
 def main():
+    args = handle_command_arguments()
+
+
     r = Recorder()
     model = whisper.load_model("base.en")
 
@@ -86,8 +106,8 @@ def main():
             print("No audio recorded.")
 
 
-    keyboard.add_hotkey("scroll lock", record, suppress=True, trigger_on_release=False)
-    keyboard.add_hotkey("scroll lock", stop_recording, suppress=True, trigger_on_release=True)
+    keyboard.add_hotkey(args.hotkey, record, suppress=True, trigger_on_release=False)
+    keyboard.add_hotkey(args.hotkey, stop_recording, suppress=True, trigger_on_release=True)
 
     import torch
     print(f"Cuda: {torch.cuda.is_available()}")
