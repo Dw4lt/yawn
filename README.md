@@ -4,14 +4,16 @@ Just a small afternoon project using [PyAudio](https://pypi.org/project/PyAudio/
 
 ## Use
 ```yaml
-usage: yawn.EXE [-h] [-k HOTKEY]
+usage: yawn.EXE [-h] [-k HOTKEY] [-m MODEL]
 
 Yet Another Whisper Transcriber Records your voice while the hotkey is pressed, transcribes it, then writes it to whatever window you have open.
 
 options:
   -h, --help            show this help message and exit
   -k HOTKEY, --hotkey HOTKEY
-                        The hotkey to start/stop recording (default: "scroll lock")
+                        The hotkey to start/stop recording (defaults to "scroll lock")
+  -m MODEL, --model MODEL
+                        The whisper model to be used (defaults to "base.en")
 ```
 
 

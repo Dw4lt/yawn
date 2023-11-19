@@ -82,7 +82,13 @@ def handle_command_arguments():
         "-k", '--hotkey',
         type=str,
         default='scroll lock',
-        help='The hotkey to start/stop recording (default: "scroll lock")',
+        help='The hotkey to start/stop recording (defaults to "scroll lock")',
+    )
+    parser.add_argument(
+        "-m", '--model',
+        type=str,
+        default='base.en',
+        help='The whisper model to be used (defaults to "base.en")',
     )
 
     return parser.parse_args()
@@ -109,7 +115,7 @@ def main():
     print(f"Cuda: {torch.cuda.is_available()}")
 
     recorder = Recorder()
-    model = whisper.load_model("base.en")
+    model = whisper.load_model(args.model)
 
 
     keyboard.add_hotkey(args.hotkey, record, args=[recorder], suppress=True, trigger_on_release=False)
