@@ -1,9 +1,11 @@
 import argparse
 import threading
+import time
 
 import keyboard
 import numpy as np
 import pyaudio
+import torch
 import whisper
 
 CHUNKSIZE = 1024
@@ -85,35 +87,34 @@ def handle_command_arguments():
 
     return parser.parse_args()
 
+
+def record(recorder: Recorder):
+    recorder.start_recording()
+
+
+def stop_recording(model: whisper.Whisper, recorder: Recorder):
+    recorder.stop_recording()
+    if len(recorder.frames) > 0:
+        audio = pre_process_audio(recorder.frames)
+
+        text = transcribe(model, audio)
+        keyboard.write(text)
+    else:
+        print("No audio recorded.")
+
+
 def main():
     args = handle_command_arguments()
 
-
-    r = Recorder()
-    model = whisper.load_model("base.en")
-
-    def record():
-        r.start_recording()
-
-    def stop_recording():
-        r.stop_recording()
-        if len(r.frames) > 0:
-            audio = pre_process_audio(r.frames)
-
-            text = transcribe(model, audio)
-            keyboard.write(text)
-        else:
-            print("No audio recorded.")
-
-
-    keyboard.add_hotkey(args.hotkey, record, suppress=True, trigger_on_release=False)
-    keyboard.add_hotkey(args.hotkey, stop_recording, suppress=True, trigger_on_release=True)
-
-    import torch
     print(f"Cuda: {torch.cuda.is_available()}")
 
-    # Tkinter setup
-    import time
+    recorder = Recorder()
+    model = whisper.load_model("base.en")
+
+
+    keyboard.add_hotkey(args.hotkey, record, args=[recorder], suppress=True, trigger_on_release=False)
+    keyboard.add_hotkey(args.hotkey, stop_recording, args=[model, recorder], suppress=True, trigger_on_release=True)
+
     print("ready!")
     while True:
         time.sleep(10)
