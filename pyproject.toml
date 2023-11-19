@@ -1,0 +1,21 @@
+[project]
+name = "yawn"
+version = "0.1.0"
+description = "Yet Another Whisper traNscriber"
+authors = [
+    {name = "Dw4lt"}
+]
+dependencies = [
+    "openai-whisper>=20231117",
+    "pyaudio>=0.2.14",
+    "keyboard>=0.13.5",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "MIT"}
+
+[tool.setuptools.dynamic]
+version = {attr = "yawn.__version__.__version__"}
+
+[project.scripts]
+yawn = "yawn.__main__:main"
