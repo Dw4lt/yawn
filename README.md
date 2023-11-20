@@ -2,6 +2,11 @@
 
 Just a small afternoon project using [PyAudio](https://pypi.org/project/PyAudio/), [whisper](https://github.com/openai/whisper) and [keyboard](https://github.com/boppreh/keyboard) in order to transcribe speech at the press of a button.
 
+## Install
+```bash
+pip install -U git+https://github.com/Dw4lt/yawn.git
+```
+
 ## Use
 ```yaml
 usage: yawn.EXE [-h] [-k HOTKEY] [-m MODEL]
