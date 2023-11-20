@@ -77,7 +77,7 @@ def transcribe(model: whisper.Whisper, audio: np.ndarray) -> str:
     return text
 
 
-def handle_command_arguments():
+def parse_command_arguments() -> tuple[str, str]:
     parser = argparse.ArgumentParser(
         description="""
         Yet Another Whisper Transcriber.
@@ -97,8 +97,16 @@ def handle_command_arguments():
         default='base.en',
         help='The whisper model to be used (defaults to "base.en")',
     )
+    parser.add_argument(
+        "-t", "--threads",
+        type=int,
+        default=0,
+        help='Nr. of threads used by torch in case of CPU inference'
+    )
 
-    return parser.parse_args()
+    args, unknown_args = parser.parse_known_args()
+
+    return args, unknown_args
 
 
 def record(recorder: Recorder):
@@ -117,15 +125,20 @@ def stop_recording(model: whisper.Whisper, recorder: Recorder):
 
 
 def main():
+    recorder = Recorder()
     status = Halo(spinner="dots")
-    args = handle_command_arguments()
+
+    # CLI handling
+    args, unknown_args = parse_command_arguments()
+    if len(unknown_args) > 0:
+        raise ValueError(f"Unknown arguments: {', '.join(unknown_args)}")
+    if (threads := args.threads) > 0:
+        torch.set_num_threads(threads)
 
     if torch.cuda.is_available():
         status.succeed("Cuda enabled.")
     else:
         status.fail("Cuda not availabe, using CPU instead.")
-
-    recorder = Recorder()
 
     status.start("Loading model")
     model = whisper.load_model(args.model)

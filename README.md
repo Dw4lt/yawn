@@ -14,6 +14,8 @@ options:
                         The hotkey to start/stop recording (defaults to "scroll lock")
   -m MODEL, --model MODEL
                         The whisper model to be used (defaults to "base.en")
+  -t THREADS, --threads THREADS
+                        Nr. of threads used by torch in case of CPU inference
 ```
 
 
